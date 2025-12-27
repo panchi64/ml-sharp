@@ -9,6 +9,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { useMockProcessing } from "@/hooks/use-mock-processing";
 import { getFileType, type FileType } from "@/lib/file-utils";
 import type { AppState } from "@/lib/keybindings";
+import type { SplatData } from "@/lib/webgpu";
 
 interface UploadedFile {
   file: File;
@@ -19,6 +20,7 @@ interface UploadedFile {
 export function SharpApp() {
   const [appState, setAppState] = useState<AppState>("idle");
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
+  const [splatData, setSplatData] = useState<SplatData | null>(null);
   const { preference, cycleTheme } = useTheme();
 
   const handleProcessingComplete = useCallback(() => {
@@ -71,6 +73,7 @@ export function SharpApp() {
       URL.revokeObjectURL(uploadedFile.previewUrl);
     }
     setUploadedFile(null);
+    setSplatData(null);
     setAppState("idle");
   }, [uploadedFile]);
 
@@ -173,7 +176,9 @@ export function SharpApp() {
             />
           )}
 
-        {appState === "results" && <ViewerPlaceholder onReset={handleReset} />}
+        {appState === "results" && (
+          <ViewerPlaceholder onReset={handleReset} splatData={splatData} />
+        )}
       </main>
     </div>
   );
