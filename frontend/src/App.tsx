@@ -1,7 +1,7 @@
-import { ComponentExample } from "@/components/component-example";
+import { SharpApp } from "@/components/sharp-app";
 
 export function App() {
-return <ComponentExample />;
+  return <SharpApp />;
 }
 
 export default App;

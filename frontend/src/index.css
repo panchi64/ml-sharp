@@ -3,7 +3,7 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
     --background: oklch(1 0 0);
@@ -119,11 +119,11 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
-    @apply font-sans bg-background text-foreground;
-    }
+    @apply font-sans bg-background text-foreground antialiased;
+  }
   html {
     @apply font-sans;
-    }
+  }
 }
