@@ -13,30 +13,40 @@ We present SHARP, an approach to photorealistic view synthesis from a single ima
 
 ## Getting started
 
-We recommend to first create a python environment:
+### Prerequisites
 
-```
-conda create -n sharp python=3.13
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/):
+
+```bash
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-Afterwards, you can install the project using
+### Installation
 
-```
-pip install -r requirements.txt
+Clone and install:
+
+```bash
+git clone https://github.com/panchi64/ml-sharp.git
+cd ml-sharp
+uv sync
 ```
 
-To test the installation, run
+To test the installation:
 
-```
-sharp --help
+```bash
+uv run sharp --help
 ```
 
 ## Using the CLI
 
 To run prediction:
 
-```
-sharp predict -i /path/to/input/images -o /path/to/output/gaussians
+```bash
+uv run sharp predict -i /path/to/input/images -o /path/to/output/gaussians
 ```
 
 The model checkpoint will be downloaded automatically on first run and cached locally at `~/.cache/torch/hub/checkpoints/`.
@@ -49,8 +59,8 @@ wget https://ml-site.cdn-apple.com/models/sharp/sharp_2572gikvuh.pt
 
 To use a manually downloaded checkpoint, specify it with the `-c` flag:
 
-```
-sharp predict -i /path/to/input/images -o /path/to/output/gaussians -c sharp_2572gikvuh.pt
+```bash
+uv run sharp predict -i /path/to/input/images -o /path/to/output/gaussians -c sharp_2572gikvuh.pt
 ```
 
 The results will be 3D gaussian splats (3DGS) in the output folder. The 3DGS `.ply` files are compatible to various public 3DGS renderers. We follow the OpenCV coordinate convention (x right, y down, z forward). The 3DGS scene center is roughly at (0, 0, +z). When dealing with 3rdparty renderers, please scale and rotate to re-center the scene accordingly.
@@ -59,11 +69,11 @@ The results will be 3D gaussian splats (3DGS) in the output folder. The 3DGS `.p
 
 Additionally you can render videos with a camera trajectory. While the gaussians prediction works for all CPU, CUDA, and MPS, rendering videos via the `--render` option currently requires a CUDA GPU. The gsplat renderer takes a while to initialize at the first launch.
 
-```
-sharp predict -i /path/to/input/images -o /path/to/output/gaussians --render
+```bash
+uv run sharp predict -i /path/to/input/images -o /path/to/output/gaussians --render
 
 # Or from the intermediate gaussians:
-sharp render -i /path/to/output/gaussians -o /path/to/output/renderings
+uv run sharp render -i /path/to/output/gaussians -o /path/to/output/renderings
 ```
 
 ## Evaluation
