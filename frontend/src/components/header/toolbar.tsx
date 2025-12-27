@@ -1,12 +1,20 @@
 import { useRef } from "react";
-import { UploadSimple, FloppyDisk, Export } from "@phosphor-icons/react";
+import {
+  FolderOpen,
+  CaretDown,
+  UploadSimple,
+  FloppyDisk,
+  Export,
+} from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ToolbarProps {
   onFileSelect: (file: File) => void;
@@ -39,66 +47,47 @@ export function Toolbar({
   };
 
   return (
-    <TooltipProvider delayDuration={300}>
-      <div className="flex items-center gap-1">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,video/mp4,video/quicktime,video/webm"
-          onChange={handleFileChange}
-          className="hidden"
-        />
+    <div className="flex items-center bg-card/80 backdrop-blur-sm rounded-full px-1 py-1 shadow-md ring-1 ring-border/50">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/heic,image/heif,video/mp4,video/quicktime,video/webm"
+        onChange={handleFileChange}
+        className="hidden"
+      />
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleUploadClick}
-              aria-label="Upload file"
-            >
-              <UploadSimple className="h-5 w-5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p>Upload image or video</p>
-          </TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={!canSave}
-              onClick={onSave}
-              aria-label="Save"
-            >
-              <FloppyDisk className="h-5 w-5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p>{canSave ? "Save PLY file" : "Process an image first"}</p>
-          </TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={!canExport}
-              onClick={onExport}
-              aria-label="Export"
-            >
-              <Export className="h-5 w-5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p>{canExport ? "Export video" : "Process an image first"}</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
-    </TooltipProvider>
+      {/* File Menu Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="rounded-full px-3 gap-1.5"
+          >
+            <FolderOpen className="h-4 w-4" />
+            <span className="text-sm">File</span>
+            <CaretDown className="h-3 w-3 text-muted-foreground" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem onClick={handleUploadClick}>
+            <UploadSimple className="h-4 w-4" />
+            Open...
+            <DropdownMenuShortcut>⌘O</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem disabled={!canSave} onClick={onSave}>
+            <FloppyDisk className="h-4 w-4" />
+            Save PLY
+            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem disabled={!canExport} onClick={onExport}>
+            <Export className="h-4 w-4" />
+            Export Video
+            <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }

@@ -11,11 +11,13 @@ export function ProgressPill({ progress, isVisible }: ProgressPillProps) {
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center transition-all duration-300",
-        isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+        "transition-all duration-300 ease-out",
+        isVisible
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 -translate-y-4 pointer-events-none"
       )}
     >
-      <div className="bg-muted rounded-full px-6 py-2 min-w-[280px] flex flex-col items-center gap-1.5">
+      <div className="bg-card/80 backdrop-blur-sm rounded-full px-6 py-2 min-w-[280px] flex flex-col items-center gap-1.5 shadow-md ring-1 ring-border/50">
         <Progress
           value={progress?.overallProgress ?? 0}
           className="h-1.5 w-full"

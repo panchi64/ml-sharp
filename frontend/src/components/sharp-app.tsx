@@ -125,32 +125,40 @@ export function SharpApp() {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between h-14 px-4 border-b border-border shrink-0">
-        {/* Left: Toolbar */}
-        <Toolbar
-          onFileSelect={handleFileSelect}
-          canSave={appState === "results"}
-          canExport={appState === "results"}
-        />
+    <div className="relative h-screen bg-background">
+      {/* Floating Header Islands */}
+      <header className="absolute top-0 left-0 right-0 z-10 pointer-events-none">
+        <div className="flex items-start justify-between p-4">
+          {/* Left: Menu Toolbar */}
+          <div className="pointer-events-auto">
+            <Toolbar
+              onFileSelect={handleFileSelect}
+              canSave={appState === "results"}
+              canExport={appState === "results"}
+            />
+          </div>
 
-        {/* Center: Progress Pill */}
-        <ProgressPill
-          progress={progress}
-          isVisible={appState === "processing"}
-        />
+          {/* Center: Progress Pill (absolute centered) */}
+          <div className="absolute left-1/2 -translate-x-1/2 top-4 pointer-events-auto">
+            <ProgressPill
+              progress={progress}
+              isVisible={appState === "processing"}
+            />
+          </div>
 
-        {/* Right: Controls */}
-        <HeaderControls
-          appState={appState}
-          themePreference={preference}
-          onCycleTheme={cycleTheme}
-        />
+          {/* Right: Controls */}
+          <div className="pointer-events-auto">
+            <HeaderControls
+              appState={appState}
+              themePreference={preference}
+              onCycleTheme={cycleTheme}
+            />
+          </div>
+        </div>
       </header>
 
       {/* Canvas */}
-      <main className="flex-1 overflow-hidden">
+      <main className="h-full overflow-hidden">
         {appState === "idle" && <DropZone onFileSelect={handleFileSelect} />}
 
         {(appState === "preview" || appState === "processing") &&
