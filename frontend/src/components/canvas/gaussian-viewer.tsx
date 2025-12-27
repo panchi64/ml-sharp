@@ -3,7 +3,7 @@
  * Renders PLY point clouds using WebGPU.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useGaussianRenderer } from "@/hooks/use-gaussian-renderer";
 import { useWebGPUSupport } from "@/hooks/use-webgpu-support";
 import { WebGPUFallback } from "./webgpu-fallback";
@@ -31,10 +31,11 @@ export function GaussianViewer({
   showLoading = true,
 }: GaussianViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [canvasElement, setCanvasElement] = useState<HTMLCanvasElement | null>(null);
   const { isSupported, isChecking, error: supportError } = useWebGPUSupport();
 
   const {
-    canvasRef,
+    canvasRef: rendererCanvasRef,
     isReady,
     hasData,
     error: rendererError,
@@ -44,23 +45,31 @@ export function GaussianViewer({
     onError,
   });
 
+  // Combine local canvas tracking with renderer's callback ref
+  const canvasRef = useCallback(
+    (node: HTMLCanvasElement | null) => {
+      setCanvasElement(node);
+      rendererCanvasRef(node);
+    },
+    [rendererCanvasRef]
+  );
+
   // Handle canvas resize
   useEffect(() => {
     const container = containerRef.current;
-    const canvas = canvasRef.current;
-    if (!container || !canvas) return;
+    if (!container || !canvasElement) return;
 
     const updateCanvasSize = () => {
       const rect = container.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
 
       // Set display size
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
+      canvasElement.style.width = `${rect.width}px`;
+      canvasElement.style.height = `${rect.height}px`;
 
       // Set actual size (will be handled by renderer, but good to initialize)
-      canvas.width = Math.floor(rect.width * dpr);
-      canvas.height = Math.floor(rect.height * dpr);
+      canvasElement.width = Math.floor(rect.width * dpr);
+      canvasElement.height = Math.floor(rect.height * dpr);
     };
 
     const observer = new ResizeObserver(() => {
@@ -71,7 +80,7 @@ export function GaussianViewer({
     updateCanvasSize();
 
     return () => observer.disconnect();
-  }, [canvasRef]);
+  }, [canvasElement]);
 
   // Load splat data when available
   useEffect(() => {

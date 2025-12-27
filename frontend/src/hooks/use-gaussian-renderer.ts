@@ -13,8 +13,8 @@ export interface UseGaussianRendererOptions {
 }
 
 export interface UseGaussianRendererResult {
-  /** Ref to attach to canvas element */
-  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  /** Ref callback to attach to canvas element */
+  canvasRef: (node: HTMLCanvasElement | null) => void;
   /** Whether the renderer is initialized */
   isReady: boolean;
   /** Whether splat data is loaded */
@@ -50,7 +50,8 @@ export interface UseGaussianRendererResult {
 export function useGaussianRenderer(
   options: UseGaussianRendererOptions = {}
 ): UseGaussianRendererResult {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  // Use state to track canvas element so effect re-runs when canvas becomes available
+  const [canvasElement, setCanvasElement] = useState<HTMLCanvasElement | null>(null);
   const rendererRef = useRef<GaussianSplatRenderer | null>(null);
 
   const [isReady, setIsReady] = useState(false);
@@ -58,12 +59,16 @@ export function useGaussianRenderer(
   const [error, setError] = useState<Error | null>(null);
   const [stats, setStats] = useState<RendererStats | null>(null);
 
+  // Callback ref to track when canvas element becomes available
+  const canvasRef = useCallback((node: HTMLCanvasElement | null) => {
+    setCanvasElement(node);
+  }, []);
+
   // Initialize renderer when canvas is available
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvasElement) return;
 
-    const renderer = new GaussianSplatRenderer(canvas);
+    const renderer = new GaussianSplatRenderer(canvasElement);
     rendererRef.current = renderer;
 
     // Set up stats callback
@@ -85,14 +90,14 @@ export function useGaussianRenderer(
         options.onError?.(error);
       });
 
-    // Cleanup on unmount
+    // Cleanup on unmount or when canvas changes
     return () => {
       renderer.dispose();
       rendererRef.current = null;
       setIsReady(false);
       setHasData(false);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [canvasElement]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load splats callback
   const loadSplats = useCallback((data: SplatData) => {
