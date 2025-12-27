@@ -3,6 +3,7 @@ name = "sharp"
 version = "0.1"
 description = "Inference/Network/Model code for SHARP view synthesis model."
 readme = "README.md"
+requires-python = ">=3.13"
 dependencies = [
   "click",
   "gsplat",
@@ -20,8 +21,8 @@ dependencies = [
 sharp = "sharp.cli:main_cli"
 
 [project.urls]
-Homepage = "https://github.com/apple/ml-sharp"
-Repository = "https://github.com/apple/ml-sharp"
+Homepage = "https://github.com/panchi64/ml-sharp"
+Repository = "https://github.com/panchi64/ml-sharp"
 
 [build-system]
 requires = ["setuptools", "setuptools-scm"]
@@ -29,6 +30,14 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[dependency-groups]
+dev = [
+    "pytest>=6.0",
+    "mypy>=1.7",
+    "ruff>=0.1.7",
+    "pre-commit>=3.0",
+]
 
 [tool.pyright]
 include = ["src"]
