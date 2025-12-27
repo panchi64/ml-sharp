@@ -6,7 +6,7 @@ import { DropZone } from "@/components/canvas/drop-zone";
 import { PreviewCanvas } from "@/components/canvas/preview-canvas";
 import { ViewerPlaceholder } from "@/components/canvas/viewer-placeholder";
 import { useTheme } from "@/hooks/use-theme";
-import { useMockProcessing } from "@/hooks/use-mock-processing";
+import { useProcessing } from "@/hooks/use-processing";
 import { getFileType, type FileType } from "@/lib/file-utils";
 import type { AppState } from "@/lib/keybindings";
 import type { SplatData } from "@/lib/webgpu";
@@ -23,11 +23,12 @@ export function SharpApp() {
   const [splatData, setSplatData] = useState<SplatData | null>(null);
   const { preference, cycleTheme } = useTheme();
 
-  const handleProcessingComplete = useCallback(() => {
+  const handleProcessingComplete = useCallback((data: SplatData) => {
+    setSplatData(data);
     setAppState("results");
   }, []);
 
-  const { isProcessing, progress, start, cancel } = useMockProcessing(
+  const { isProcessing, progress, error: _error, start, cancel } = useProcessing(
     handleProcessingComplete
   );
 
@@ -48,9 +49,10 @@ export function SharpApp() {
 
   // Handle start processing
   const handleStartProcessing = useCallback(() => {
+    if (!uploadedFile) return;
     setAppState("processing");
-    start();
-  }, [start]);
+    start(uploadedFile.file);
+  }, [start, uploadedFile]);
 
   // Handle cancel (back to idle or preview)
   const handleCancel = useCallback(() => {
