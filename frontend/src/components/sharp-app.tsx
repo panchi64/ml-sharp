@@ -4,7 +4,7 @@ import { ProgressPill } from "@/components/header/progress-pill";
 import { HeaderControls } from "@/components/header/header-controls";
 import { DropZone } from "@/components/canvas/drop-zone";
 import { PreviewCanvas } from "@/components/canvas/preview-canvas";
-import { ViewerPlaceholder } from "@/components/canvas/viewer-placeholder";
+import { ResultsViewer } from "@/components/canvas/results-viewer";
 import { useTheme } from "@/hooks/use-theme";
 import { useProcessing } from "@/hooks/use-processing";
 import { getFileType, type FileType } from "@/lib/file-utils";
@@ -178,8 +178,12 @@ export function SharpApp() {
             />
           )}
 
-        {appState === "results" && (
-          <ViewerPlaceholder onReset={handleReset} splatData={splatData} />
+        {appState === "results" && uploadedFile && (
+          <ResultsViewer
+            onReset={handleReset}
+            splatData={splatData}
+            fileType={uploadedFile.type}
+          />
         )}
       </main>
     </div>
