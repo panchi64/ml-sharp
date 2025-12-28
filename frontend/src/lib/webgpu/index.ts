@@ -8,8 +8,9 @@ export { GaussianSplatRenderer, type RendererStats } from "./renderer";
 // Context and initialization
 export { initWebGPU, checkWebGPUSupport, WebGPUNotSupportedError } from "./context";
 
-// PLY parsing
+// PLY parsing and export
 export { parsePlyFile } from "./ply/parser";
+export { exportToPly } from "./ply/exporter";
 export type { SplatData, PlyHeader, PlyProperty } from "./ply/types";
 
 // Camera

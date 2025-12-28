@@ -9,7 +9,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { useProcessing } from "@/hooks/use-processing";
 import { getFileType, type FileType } from "@/lib/file-utils";
 import type { AppState } from "@/lib/keybindings";
-import type { SplatData } from "@/lib/webgpu";
+import { exportToPly, type SplatData } from "@/lib/webgpu";
 
 interface UploadedFile {
   file: File;
@@ -78,6 +78,21 @@ export function SharpApp() {
     setSplatData(null);
     setAppState("idle");
   }, [uploadedFile]);
+
+  // Handle download PLY
+  const handleDownloadPly = useCallback(() => {
+    if (!splatData || !uploadedFile) return;
+
+    const blob = exportToPly(splatData);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    // Use original filename with _splat.ply suffix
+    const baseName = uploadedFile.file.name.replace(/\.[^/.]+$/, "");
+    a.download = `${baseName}_splat.ply`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [splatData, uploadedFile]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -183,6 +198,7 @@ export function SharpApp() {
             onReset={handleReset}
             splatData={splatData}
             fileType={uploadedFile.type}
+            onDownloadPly={handleDownloadPly}
           />
         )}
       </main>
